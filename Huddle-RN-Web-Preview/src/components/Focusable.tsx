@@ -4,13 +4,13 @@ import {C} from '../theme/colors';
 
 export function Action({label,onPress,secondary=false,style}:{label:string;onPress:()=>void;secondary?:boolean;style?:ViewStyle}) {
   const [focused,setFocused] = useState(false);
-  return <Pressable accessibilityRole="button" onPress={onPress} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} style={[styles.action,secondary&&styles.secondary,focused&&styles.focused,style]}>
+  return <Pressable focusable accessibilityRole="button" onPress={onPress} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} style={[styles.action,secondary&&styles.secondary,focused&&styles.focused,style]}>
     <Text style={[styles.actionText,secondary&&{color:C.text}]}>{label}</Text>
   </Pressable>;
 }
 export function Tile({title,subtitle,emoji,color,onPress,width=252}:{title:string;subtitle:string;emoji:string;color:string;onPress:()=>void;width?:number}) {
   const [focused,setFocused] = useState(false);
-  return <Pressable accessibilityRole="button" onPress={onPress} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} style={[styles.tile,{width},focused&&styles.focused]}>
+  return <Pressable focusable accessibilityRole="button" onPress={onPress} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} style={[styles.tile,{width},focused&&styles.focused]}>
     <View style={[styles.art,{backgroundColor:color}]}><Text style={styles.emoji}>{emoji}</Text></View>
     <Text style={styles.tileTitle} numberOfLines={1}>{title}</Text><Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>
   </Pressable>;
