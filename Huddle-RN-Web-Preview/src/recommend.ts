@@ -66,9 +66,9 @@ export function recommend(friends: Friend[], movies: Movie[], games: Game[], act
     .filter(g => best.movie.gameIds.includes(g.id))
     .sort((a, b) => gameScore(b) - gameScore(a));
 
-  const notes = [fits.length ? `${movieMinutes(best.movie.length)} min fits everyone here` : 'Nothing fits the shortest time budget, so length was ignored'];
+  const notes = [fits.length ? `Runs ${best.movie.length}, which suits everyone` : 'Nothing fits the shortest time budget, so length was ignored'];
   const low = best.scores[best.pickiest.id];
-  notes.push(low >= 0 ? `Nobody dislikes it; ${best.pickiest.name} is the least keen` : `${best.pickiest.name} is not a fan, but it is the best common ground`);
+  notes.push(low >= 0 ? 'Nobody dislikes it' : `${best.pickiest.name} is not a fan, but it is the best common ground`);
   const skipped = movies.filter(m => !pool.includes(m));
   if (skipped.length) {
     const short = here.find(f => f.minutes === budget);
