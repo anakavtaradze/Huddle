@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {recommend, movieMinutes} from '../Huddle-RN-Web-Preview/src/recommend.ts';
+import {recommend, reasons, movieMinutes} from '../Huddle-RN-Web-Preview/src/recommend.ts';
 import {buildPrompt, parseIdeas} from '../Huddle-RN-Web-Preview/src/ai.ts';
 import {movies, games, initialFriends, initialActivities} from '../Huddle-RN-Web-Preview/src/data/mock.ts';
 
@@ -15,7 +15,7 @@ test('Common ground beats the most voted movie.', () => {
   const p = pick(initialFriends);
   assert.equal(p.movie.id, 'm8'); // KPop has the most votes but Sam dislikes Music.
   assert.ok(p.games.every(g => p.movie.gameIds.includes(g.id)));
-  assert.ok(p.why.some(w => w.startsWith('Sam likes')));
+  assert.ok(p.why.some(w => /Sam.* like Comedy/.test(w)));
 });
 
 test('Alternatives are other movies that nobody dislikes, best first.', () => {
@@ -68,4 +68,12 @@ test('Each voter counts once and breaks ties between equal fits.', () => {
 test('The signed-in user reads naturally in reasons.', () => {
   const p = pick(initialFriends.filter(f => f.id === 'me'));
   assert.ok(p.why.some(w => w.startsWith('You like ')));
+});
+
+test('People who share a taste share one line.', () => {
+  const here = initialFriends.filter(f => f.online);
+  assert.deepEqual(reasons(here, ['Comedy']), ['Sam, Alex and You like Comedy']);
+  assert.deepEqual(reasons(here, ['Animation', 'Family', 'Fantasy']), ['Mia likes Animation + Family + Fantasy']);
+  assert.deepEqual(reasons(here, ['Music']), ['Mia likes Music', 'Sam dislikes Music']);
+  assert.deepEqual(reasons(here, ['Documentary']), ['No strong feelings either way']);
 });

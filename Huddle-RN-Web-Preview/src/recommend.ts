@@ -25,12 +25,24 @@ const disliked = (f: Friend, tags: string[]) => tags.filter(t => f.dislikes.some
 // One person's fit with a list of tags (genres or game categories).
 export const fit = (f: Friend, tags: string[]) => liked(f, tags).length * LIKE + disliked(f, tags).length * DISLIKE;
 
-// Plain-language reasons: who likes what, and who would put up with it.
+const names = (people: Friend[]) => people.length === 1 ? people[0].name : `${people.slice(0, -1).map(p => p.name).join(', ')} and ${people[people.length - 1].name}`;
+
+// Plain-language reasons, grouped so people who share a taste share a line:
+// "Sam, Alex and You like Comedy" and "Mia likes Animation + Family".
 export function reasons(here: Friend[], tags: string[]): string[] {
-  const out = here.flatMap(f => {
-    const l = liked(f, tags), d = disliked(f, tags);
-    return [l.length && `${f.name} like${f.id === 'me' ? '' : 's'} ${l.join(' + ')}`, d.length && `${f.name} dislike${f.id === 'me' ? '' : 's'} ${d.join(' + ')}`].filter(Boolean) as string[];
-  });
+  const lines = (pick: (f: Friend, tags: string[]) => string[], verb: string) => {
+    const groups = new Map<string, {people: Friend[]; tags: string[]}>();
+    for (const tag of tags) {
+      const people = here.filter(f => pick(f, [tag]).length);
+      if (!people.length) continue;
+      const key = people.map(f => f.id).join(',');
+      const group = groups.get(key) ?? {people, tags: []};
+      group.tags.push(tag);
+      groups.set(key, group);
+    }
+    return [...groups.values()].map(g => `${names(g.people)} ${g.people.length === 1 && g.people[0].id !== 'me' ? verb + 's' : verb} ${g.tags.join(' + ')}`);
+  };
+  const out = [...lines(liked, 'like'), ...lines(disliked, 'dislike')];
   return out.length ? out : ['No strong feelings either way'];
 }
 
