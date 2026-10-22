@@ -43,16 +43,18 @@ test('No one online gives no pick.', () => {
 });
 
 test('The AI prompt names the people, the library and the reply format.', () => {
-  const prompt = buildPrompt({friends: initialFriends, activities: initialActivities, catalog: ['Sunday Soup']});
+  const prompt = buildPrompt({friends: initialFriends, activities: initialActivities, catalog: ['Sunday Soup'], genres: ['Comedy', 'Mystery']});
   assert.match(prompt, /Sam: likes Mystery/);
   assert.match(prompt, /Sunday Soup/);
   assert.doesNotMatch(prompt, /Jordan/); // offline
   assert.match(prompt, /JSON array/);
+  assert.match(prompt, /120 minutes or less/); // shortest budget among those here
+  assert.match(prompt, /genres from this list where possible: Comedy, Mystery/);
 });
 
 test('AI replies are parsed even inside prose or code fences, and bad ones give nothing.', () => {
-  const good = 'Sure!\n```json\n[{"title":"Starlight Bakery","genre":"Comedy","why":"Cozy"},{"nope":1}]\n```';
-  assert.deepEqual(parseIdeas(good), [{title: 'Starlight Bakery', genre: 'Comedy', why: 'Cozy'}]);
+  const good = 'Sure!\n```json\n[{"title":"Starlight Bakery","genre":"Comedy","length":"1h 30m","why":"Cozy"},{"nope":1}]\n```';
+  assert.deepEqual(parseIdeas(good), [{title: 'Starlight Bakery', genre: 'Comedy', length: '1h 30m', why: 'Cozy'}]);
   assert.deepEqual(parseIdeas('no list here'), []);
   assert.deepEqual(parseIdeas('[oops'), []);
 });

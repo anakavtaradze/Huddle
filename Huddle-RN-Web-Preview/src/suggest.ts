@@ -2,13 +2,13 @@ import {AI_ENDPOINT, remoteSuggester, type AiSuggester} from './ai';
 import {fit, reasons} from './recommend';
 
 // Not a model: a small fixed shelf of fictional titles, ranked with the same common-ground fit.
-const SHELF: {title: string; genre: string}[] = [
-  {title: 'Starlight Bakery', genre: 'Animation · Comedy · Family'},
-  {title: 'The Quiet Lighthouse', genre: 'Mystery · Sci-Fi'},
-  {title: 'Echoes of Kestrel Bay', genre: 'Adventure · Fantasy'},
-  {title: 'Dance Floor Detectives', genre: 'Comedy · Mystery'},
-  {title: 'Ten Minutes to Midnight', genre: 'Action · Sci-Fi'},
-  {title: 'Hollow Hill', genre: 'Horror'},
+const SHELF: {title: string; genre: string; length: string}[] = [
+  {title: 'Starlight Bakery', genre: 'Animation · Comedy · Family', length: '1h 33m'},
+  {title: 'The Quiet Lighthouse', genre: 'Mystery · Sci-Fi', length: '1h 51m'},
+  {title: 'Echoes of Kestrel Bay', genre: 'Adventure · Fantasy', length: '1h 58m'},
+  {title: 'Dance Floor Detectives', genre: 'Comedy · Mystery', length: '1h 44m'},
+  {title: 'Ten Minutes to Midnight', genre: 'Action · Sci-Fi', length: '1h 47m'},
+  {title: 'Hollow Hill', genre: 'Horror', length: '1h 38m'},
 ];
 export const mockSuggester: AiSuggester = async ({friends, catalog}) => {
   const here = friends.filter(f => f.online);
@@ -20,7 +20,7 @@ export const mockSuggester: AiSuggester = async ({friends, catalog}) => {
     })
     .sort((a, b) => b.low - a.low)
     .slice(0, 3)
-    .map(s => ({title: s.title, genre: s.genre, why: reasons(here, s.tags).join(' · ')}));
+    .map(s => ({title: s.title, genre: s.genre, length: s.length, why: reasons(here, s.tags).join(' · ')}));
 };
 
 export const aiIsMock = !AI_ENDPOINT;
