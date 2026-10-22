@@ -56,3 +56,16 @@ test('AI replies are parsed even inside prose or code fences, and bad ones give 
   assert.deepEqual(parseIdeas('no list here'), []);
   assert.deepEqual(parseIdeas('[oops'), []);
 });
+
+test('Each voter counts once and breaks ties between equal fits.', () => {
+  const same = movies.filter(m => ['m2', 'm3'].includes(m.id));
+  const tied = f => f.map(x => ({...x, likes: [], dislikes: [], minutes: 240}));
+  const votes = title => [{id: 'a', type: 'movie', title, voters: ['f1', 'f2']}];
+  assert.equal(recommend(tied(initialFriends), same, games, votes('The Last Stardust')).movie.id, 'm3');
+  assert.equal(recommend(tied(initialFriends), same, games, votes('Moonlight Mystery')).movie.id, 'm2');
+});
+
+test('The signed-in user reads naturally in reasons.', () => {
+  const p = pick(initialFriends.filter(f => f.id === 'me'));
+  assert.ok(p.why.some(w => w.startsWith('You like ')));
+});

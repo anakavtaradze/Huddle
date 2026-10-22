@@ -29,7 +29,7 @@ export const fit = (f: Friend, tags: string[]) => liked(f, tags).length * LIKE +
 export function reasons(here: Friend[], tags: string[]): string[] {
   const out = here.flatMap(f => {
     const l = liked(f, tags), d = disliked(f, tags);
-    return [l.length && `${f.name} likes ${l.join(' + ')}`, d.length && `${f.name} dislikes ${d.join(' + ')}`].filter(Boolean) as string[];
+    return [l.length && `${f.name} like${f.id === 'me' ? '' : 's'} ${l.join(' + ')}`, d.length && `${f.name} dislike${f.id === 'me' ? '' : 's'} ${d.join(' + ')}`].filter(Boolean) as string[];
   });
   return out.length ? out : ['No strong feelings either way'];
 }
@@ -45,7 +45,7 @@ export function recommend(friends: Friend[], movies: Movie[], games: Game[], act
   const budget = min(here.map(f => f.minutes));
   const fits = movies.filter(m => movieMinutes(m.length) <= budget);
   const pool = fits.length ? fits : movies;
-  const votes = (title: string) => activities.filter(a => a.title === title).reduce((n, a) => n + a.votes, 0);
+  const votes = (title: string) => activities.filter(a => a.title === title).reduce((n, a) => n + a.voters.length, 0);
 
   const ranked = pool
     .map(movie => {

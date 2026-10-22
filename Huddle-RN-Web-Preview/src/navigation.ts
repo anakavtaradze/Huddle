@@ -1,4 +1,4 @@
-export type Page = 'Home' | 'Movies' | 'Games' | 'Friends' | 'Plans' | 'Room';
+export type Page = 'Home' | 'Movies' | 'Games' | 'Friends' | 'Plans' | 'Room' | 'Settings';
 export type Navigation = {page: Page; history: Page[]};
 export type NavigationAction = {type: 'go'; page: Page} | {type: 'back'};
 
