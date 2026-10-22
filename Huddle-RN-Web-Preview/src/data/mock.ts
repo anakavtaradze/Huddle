@@ -1,6 +1,6 @@
 export type Movie = {id:string; title:string; genre:string; length:string; emoji:string; color:string; description:string; gameIds:string[]};
 export type Game = {id:string; title:string; category:string; duration:string; emoji:string; color:string; description:string};
-export type Friend = {id:string; name:string; nickname:string; online:boolean; color:string};
+export type Friend = {id:string; name:string; nickname:string; online:boolean; color:string; likes:string[]; dislikes:string[]; minutes:number};
 export type Activity = {id:string; type:'movie'|'game'; title:string; votes:number};
 export const movies:Movie[] = [
   {id:'m1',title:'KPop Demon Hunters',genre:'Animation · Music',length:'1h 36m',emoji:'🎤',color:'#743EA5',description:'A pop-star adventure with plenty of music, mystery, and friendship.',gameIds:['g1','g2','g3']},
@@ -14,10 +14,10 @@ export const games:Game[] = [
   {id:'g4',title:'Emoji Movie Challenge',category:'Guessing',duration:'5 min',emoji:'🎭',color:'#86672D',description:'Decode movie titles from emoji clues.'},
 ];
 export const initialFriends:Friend[] = [
-  {id:'f1',name:'Mia',nickname:'Popcorn Queen',online:true,color:'#A24B8B'},
-  {id:'f2',name:'Sam',nickname:'Plot Twist King',online:true,color:'#477FA0'},
-  {id:'f3',name:'Alex',nickname:'Snack Captain',online:true,color:'#6E64B2'},
-  {id:'f4',name:'Jordan',nickname:'J',online:false,color:'#64786A'},
+  {id:'f1',name:'Mia',nickname:'Popcorn Queen',online:true,color:'#A24B8B',likes:['Animation','Music','Quiz'],dislikes:['Horror'],minutes:120},
+  {id:'f2',name:'Sam',nickname:'Plot Twist King',online:true,color:'#477FA0',likes:['Mystery','Comedy','Quiz'],dislikes:['Music'],minutes:180},
+  {id:'f3',name:'Alex',nickname:'Snack Captain',online:true,color:'#6E64B2',likes:['Comedy','Adventure','Guessing'],dislikes:[],minutes:150},
+  {id:'f4',name:'Jordan',nickname:'J',online:false,color:'#64786A',likes:['Sci-Fi'],dislikes:[],minutes:90},
 ];
 export const initialActivities:Activity[] = [
   {id:'a1',type:'movie',title:'KPop Demon Hunters',votes:4},
