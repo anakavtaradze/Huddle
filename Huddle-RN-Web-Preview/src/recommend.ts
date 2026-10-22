@@ -1,12 +1,12 @@
 import type {Friend, Movie, Game, Activity} from './data/mock';
 
-export type GroupPick = {
+export type Ranked = {
   movie: Movie;
-  games: Game[];
   scores: Record<string, number>;
   pickiest: Friend;
-  notes: string[];
+  why: string[];
 };
+export type GroupPick = Ranked & {games: Game[]; notes: string[]; alternatives: Ranked[]};
 
 const LIKE = 2;
 const DISLIKE = -3;
@@ -16,10 +16,22 @@ export function movieMinutes(length: string): number {
   return m ? Number(m[1]) * 60 + Number(m[2]) : 0;
 }
 
+export const genres = (genre: string) => genre.split('·').map(g => g.trim());
+
+const same = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
+const liked = (f: Friend, tags: string[]) => tags.filter(t => f.likes.some(x => same(x, t)));
+const disliked = (f: Friend, tags: string[]) => tags.filter(t => f.dislikes.some(x => same(x, t)));
+
 // One person's fit with a list of tags (genres or game categories).
-function fit(friend: Friend, tags: string[]): number {
-  const has = (list: string[], tag: string) => list.some(x => x.toLowerCase() === tag.toLowerCase());
-  return tags.reduce((sum, t) => sum + (has(friend.likes, t) ? LIKE : 0) + (has(friend.dislikes, t) ? DISLIKE : 0), 0);
+export const fit = (f: Friend, tags: string[]) => liked(f, tags).length * LIKE + disliked(f, tags).length * DISLIKE;
+
+// Plain-language reasons: who likes what, and who would put up with it.
+export function reasons(here: Friend[], tags: string[]): string[] {
+  const out = here.flatMap(f => {
+    const l = liked(f, tags), d = disliked(f, tags);
+    return [l.length && `${f.name} likes ${l.join(' + ')}`, d.length && `${f.name} dislikes ${d.join(' + ')}`].filter(Boolean) as string[];
+  });
+  return out.length ? out : ['No strong feelings either way'];
 }
 
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
@@ -37,27 +49,30 @@ export function recommend(friends: Friend[], movies: Movie[], games: Game[], act
 
   const ranked = pool
     .map(movie => {
-      const per = here.map(f => fit(f, movie.genre.split('·').map(g => g.trim())));
-      return {movie, per, low: min(per), avg: sum(per) / per.length, votes: votes(movie.title)};
+      const tags = genres(movie.genre);
+      const per = here.map(f => fit(f, tags));
+      return {movie, per, low: min(per), avg: sum(per) / per.length, votes: votes(movie.title), tags};
     })
-    .sort((a, b) => b.low - a.low || b.avg - a.avg || b.votes - a.votes);
+    .sort((a, b) => b.low - a.low || b.avg - a.avg || b.votes - a.votes)
+    .map(r => {
+      const scores: Record<string, number> = {};
+      here.forEach((f, i) => { scores[f.id] = r.per[i]; });
+      return {movie: r.movie, scores, pickiest: here[r.per.indexOf(r.low)], why: reasons(here, r.tags)} as Ranked;
+    });
   const best = ranked[0];
-
-  const scores: Record<string, number> = {};
-  here.forEach((f, i) => { scores[f.id] = best.per[i]; });
-  const pickiest = here[best.per.indexOf(best.low)];
 
   const gameScore = (g: Game) => min(here.map(f => fit(f, [g.category])));
   const picks = games
     .filter(g => best.movie.gameIds.includes(g.id))
     .sort((a, b) => gameScore(b) - gameScore(a));
 
-  const notes = [`${movieMinutes(best.movie.length)} min fits everyone here`];
-  if (!fits.length) notes[0] = 'Nothing fits the shortest time budget, so length was ignored';
-  notes.push(best.low >= 0 ? `Nobody dislikes it; ${pickiest.name} is the least keen` : `${pickiest.name} is not a fan, but it is the best common ground`);
-  movies.filter(m => !pool.includes(m)).forEach(m => {
+  const notes = [fits.length ? `${movieMinutes(best.movie.length)} min fits everyone here` : 'Nothing fits the shortest time budget, so length was ignored'];
+  const low = best.scores[best.pickiest.id];
+  notes.push(low >= 0 ? `Nobody dislikes it; ${best.pickiest.name} is the least keen` : `${best.pickiest.name} is not a fan, but it is the best common ground`);
+  const skipped = movies.filter(m => !pool.includes(m));
+  if (skipped.length) {
     const short = here.find(f => f.minutes === budget);
-    notes.push(`Skipped ${m.title}: too long for ${short?.name}`);
-  });
-  return {movie: best.movie, games: picks, scores, pickiest, notes};
+    notes.push(`Too long for ${short?.name}: ${skipped.map(m => m.title).join(', ')}`);
+  }
+  return {...best, games: picks, notes, alternatives: ranked.slice(1, 4)};
 }
