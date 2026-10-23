@@ -1,5 +1,25 @@
 # Huddle
 
+Huddle helps friends choose a movie, plan games, and share a food night from the TV. The app combines an explainable group recommendation, persistent movie feedback, and Eat Together food parties through a Vega OS interface and phone companion.
+
+Huddle contributors license their original code under the [MIT license](LICENSE). The [third-party notices](THIRD_PARTY_NOTICES.md) describe dependency, template, and asset provenance.
+
+## Quick start and submission materials
+
+The [judge guide](docs/submission/JUDGE_GUIDE.md) provides fresh-clone installation, browser and Vega commands, local service setup, AWS authentication, and phone invitation instructions. The [submission copy](docs/submission/DEVPOST.md), [demo script](docs/submission/DEMO_SCRIPT.md), [product feedback draft](docs/submission/PRODUCT_FEEDBACK.md), and [handoff checklist](docs/submission/CHECKLIST.md) provide the final submission materials. Those materials cover the movie planner, persistent learning, Eat Together, and live Amazon Bedrock recommendations.
+
+You can install the browser and service dependencies and start the preview from the repository root:
+
+```sh
+npm ci
+npm ci --prefix Huddle-RN-Web-Preview
+npm run dev
+```
+
+Your browser can open http://127.0.0.1:5173. Separate terminals run `npm run food:server` for food parties and `npm run ai:server` for live AI after you configure AWS access. The judge guide covers the native build and the separate phone companion on port 8788.
+
+## Project structure
+
 Huddle shares its React Native screens between a browser preview and a Vega OS integration. The competition demo targets Amazon's Vega Virtual Device on an Apple Silicon Mac. The browser preview provides a quick UI development loop; the native build produces the Vega package that the virtual device runs.
 
 The repository contains the shared screens, Vega focus/back adapters, and generated native project in `Huddle-Vega`. Vega SDK 0.24.12112 successfully built the aarch64 release package, and the Vega Virtual Device installed and launched the app on this Mac. The current app uses mock movies, games, friends, plans, and movie-room data. The movie experience persists recommendation feedback on the current device. The movie experience does not implement streaming, multiplayer synchronization, or authentication. Eat Together provides a separate synchronized food party with durable storage and capability-based participant sessions.
@@ -49,7 +69,7 @@ You can open the preview at http://127.0.0.1:5173. You can use Tab and Enter to 
 
 ## Vega development on macOS
 
-This Mac has Vega CLI 1.4.5, Vega SDK 0.24.12112, the Vega Virtual Device, Vega Studio 0.24.1 for VS Code, and the required command-line support tools. Amazon's installer updated the shell configuration and enabled telemetry by default. A new machine requires the [official Vega SDK](https://developer.amazon.com/docs/vega/0.24/install-vega-sdk) and its macOS prerequisites.
+The project's recorded Mac development environment used Vega CLI 1.4.5, Vega SDK 0.24.12112, the Vega Virtual Device, Vega Studio 0.24.1 for VS Code, and the required command-line support tools. Amazon's installer updated the shell configuration and enabled telemetry by default. A new machine requires the [official Vega SDK](https://developer.amazon.com/docs/vega/0.24/install-vega-sdk) and its macOS prerequisites.
 
 You can rebuild the existing native project with these commands from the repository root:
 
