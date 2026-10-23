@@ -28,6 +28,7 @@
     "vite.config.ts"
   ],
   "exclude": [
-    "src/platform/tv.tsx"
+    "src/platform/tv.tsx",
+    "src/platform/learningStorage.ts"
   ]
 }

@@ -49,9 +49,10 @@ export function reasons(here: Friend[], tags: string[]): string[] {
 const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
 const min = (xs: number[]) => Math.min(...xs);
 
-// Common ground: rank by the least happy person first, then the average, then votes.
-// Only online friends count, and movies longer than the shortest time budget are dropped.
-export function recommend(friends: Friend[], movies: Movie[], games: Game[], activities: Activity[]): GroupPick | null {
+// The ranking preserves the least happy person's fit before applying learned preferences.
+// The time filter excludes movies that exceed any online friend's budget.
+export function recommend(friends: Friend[], movies: Movie[], games: Game[], activities: Activity[],
+  feedbackScore: (friendId: string, tags: string[]) => number = () => 0): GroupPick | null {
   const here = friends.filter(f => f.online);
   if (!here.length || !movies.length) return null;
   const budget = min(here.map(f => f.minutes));
@@ -64,13 +65,19 @@ export function recommend(friends: Friend[], movies: Movie[], games: Game[], act
     .map(movie => {
       const tags = genres(movie.genre);
       const per = here.map(f => fit(f, tags));
-      return {movie, per, low: min(per), avg: sum(per) / per.length, votes: votes(movie.title), tags};
+      const learned = sum(here.map(f => {
+        const score = feedbackScore(f.id, tags);
+        return Number.isFinite(score) ? Math.max(-1, Math.min(1, score)) : 0;
+      })) / here.length;
+      return {movie, per, low: min(per), avg: sum(per) / per.length + learned * 0.5, votes: votes(movie.title), tags, learned};
     })
     .sort((a, b) => b.low - a.low || b.avg - a.avg || b.votes - a.votes)
     .map(r => {
       const scores: Record<string, number> = {};
       here.forEach((f, i) => { scores[f.id] = r.per[i]; });
-      return {movie: r.movie, scores, pickiest: here[r.per.indexOf(r.low)], why: reasons(here, r.tags)} as Ranked;
+      const why = reasons(here, r.tags);
+      if (r.learned !== 0) why.push('Your group’s movie feedback also informs this ranking');
+      return {movie: r.movie, scores, pickiest: here[r.per.indexOf(r.low)], why} as Ranked;
     });
   const best = ranked[0];
 
