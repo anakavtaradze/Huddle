@@ -11,6 +11,8 @@
     "vega:sync": "node scripts/vega.mjs sync",
     "vega:build": "node scripts/vega.mjs build",
     "vega:run": "node scripts/vega.mjs run",
+    "ai:vega": "vega exec vda reverse tcp:8787 tcp:8787",
+    "ai:check": "node --env-file-if-exists=.env server/check-ai.mjs",
     "food:server": "node --env-file-if-exists=.env server/food-server.mjs",
     "test:e2e": "playwright test"
   },
@@ -18,6 +20,7 @@
     "node": ">=22.18.0"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1156.0",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
