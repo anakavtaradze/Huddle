@@ -2,6 +2,8 @@
 
 Huddle helps friends choose a movie, plan games, and share a food night from the TV. The app combines an explainable group recommendation, persistent movie feedback, and Eat Together food parties through a Vega OS interface and phone companion.
 
+**Prototype status:** This repository reflects the authors' hackathon work on Huddle. Users may still encounter bugs or incomplete features.
+
 Huddle contributors license their original code under the [MIT license](LICENSE). The [third-party notices](THIRD_PARTY_NOTICES.md) describe dependency, template, and asset provenance.
 
 ## Quick start and submission materials
