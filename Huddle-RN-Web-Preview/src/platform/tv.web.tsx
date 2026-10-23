@@ -13,7 +13,8 @@ export function useRemoteBack(onBack: () => boolean) {
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && onBack()) event.preventDefault();
     };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    // React Native text inputs consume bubbling key events, so capture handles Back first.
+    window.addEventListener('keydown', handleKey, true);
+    return () => window.removeEventListener('keydown', handleKey, true);
   }, [onBack]);
 }

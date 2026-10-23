@@ -2,10 +2,11 @@
 
 The team should complete the following items before it submits Huddle. The [official rules](https://amazonappdev2026.devpost.com/rules) set the deadline at October 23, 2026, 2:00 p.m. America/Chicago.
 
-- [ ] The team confirms the merge of [PR #5](https://github.com/anakavtaradze/Huddle/pull/5) and verifies the combined app.
-- [ ] The team merges the root MIT license and submission documentation into `main`.
-- [ ] GitHub displays the MIT license in the public repository's About section.
-- [ ] The team runs the [judge guide](JUDGE_GUIDE.md) against the final commit and records that commit SHA below.
+- [x] The team confirms the merge of [PR #5](https://github.com/anakavtaradze/Huddle/pull/5) and verifies the combined app.
+- [x] The team merges the root MIT license and submission documentation into `main` through [PR #6](https://github.com/anakavtaradze/Huddle/pull/6).
+- [x] GitHub detects the MIT license on the public repository.
+- [x] The team records the merged baseline and the completed checks in the [validation report](VALIDATION.md).
+- [ ] The team merges the tested Escape-key fix and this final validation record before submission.
 - [ ] The team records the Vega app walkthrough and adds its public YouTube or Vimeo URL to Devpost.
 - [ ] The team pastes the [project story](DEVPOST.md) and confirmed [product feedback](PRODUCT_FEEDBACK.md) into Devpost.
 - [ ] The team selects the Fire TV track and AWS Builder mini challenge.
@@ -18,7 +19,7 @@ The team should complete the following items before it submits Huddle. The [offi
 | Repository | https://github.com/anakavtaradze/Huddle |
 | Primary track | Fire TV through Vega OS |
 | Mini challenge | AWS Builder through Amazon Bedrock |
-| Final commit | The team records the merged commit SHA here. |
+| Validated baseline | `c750b0ccadca769b07c21cd43071a0928163e490` plus the Escape-key fix in this branch. |
 | Demo URL | The team adds the video URL after upload. |
 | Devpost URL | The team adds the project URL after submission. |
 
@@ -26,22 +27,24 @@ The Open Source mini challenge requires an additional qualifying project or cont
 
 ## Verification record
 
-The local submission branch includes Bedrock PR head `ce7e1ca83530b3b29e0b80792ada47fdcdc4d52f` and the submission packaging changes. The checks below ran on that combined source on October 23, 2026. The team should confirm the final merge commit and complete the device and live-service checks during recording.
+The validation used the merged `main` commit `c750b0ccadca769b07c21cd43071a0928163e490` and the browser Escape-key fix on October 23, 2026. The [validation report](VALIDATION.md) records the tested flows and remaining recording tasks.
 
 | Check | Status |
 | --- | --- |
 | `npm ci` and browser dependency installation | The locked dependency installations passed. |
 | `npm test` | All 47 unit and service tests passed. |
 | `npm run check:web` | The TypeScript check and production web build passed. |
-| `npm run test:e2e` | All four browser tests passed, including the AI/learning/food integration check and independent food-party sessions. |
+| `npm run test:e2e` | All five browser tests passed, including the new focused-input Escape regression test. |
 | AI startup through `npm run ai:server` | A health-only check confirmed that the command loads the port, region, and model ID from `.env`. |
 | Root MIT license | The file matched GitHub's canonical MIT text after copyright substitution. |
 | Documentation links | All local Markdown targets resolved. |
-| `npm run vega:build` | The team must verify the final device build; this packaging run did not rebuild the native app. |
-| Final Vega remote walkthrough | The team must verify the final app during recording. |
-| Live `npm run ai:check` | The team must verify a live Bedrock response before recording; the packaging checks invoked no paid model calls. |
-| TV-to-phone food invitation and status update | Browser automation passed; the team must verify its physical phone's network connection during recording. |
+| `npm run vega:build` | The release build passed and produced an arm64 Vega package. |
+| Final Vega remote walkthrough | The installed release passed navigation and live AI checks on the Vega Virtual Device. |
+| Live `npm run ai:check` | The live Bedrock check returned a valid Amazon Nova 2 Lite response. |
+| TV-to-phone food invitation and status update | The native TV host and two phone-sized browser sessions passed QR decoding, LAN access, independent status updates, host-edit resets, and phone reload restoration. The team still needs a physical-phone scan during recording. |
 
 ## Existing dependency advisory
 
 The fresh browser dependency installation reported one high-severity advisory for `image-size@1.2.1` through React Native's development dependency tree. The advisory concerns denial of service during image metadata parsing ([JXL/HEIF](https://github.com/advisories/GHSA-5p2g-fcmc-qvqq), [ICNS](https://github.com/advisories/GHSA-w3rx-r6r6-pgpr)). This submission package retains the existing dependency versions. The root service dependency audit reported no vulnerabilities during installation.
+
+The native SDK dependency installation also reported 27 existing advisories (14 moderate and 13 high). This validation retains the SDK template's locked versions.
