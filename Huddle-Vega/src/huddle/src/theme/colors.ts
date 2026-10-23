@@ -1,5 +1,5 @@
 export const C = {
-  bg: '#0E101B', panel: '#1A1D30', raised: '#242740', outline: '#41445D',
-  primary: '#A88AFF', primaryDark: '#6248A3', text: '#F8F5FF', muted: '#B5B2C9',
-  pink: '#FF83BA', green: '#86DFC3', gold: '#FFD18B',
+  bg: '#080C13', panel: '#121A26', raised: '#1D2838', outline: '#2D3B4E',
+  primary: '#D5FF70', primaryDark: '#243A23', text: '#F5F7FA', muted: '#A9B7C9',
+  pink: '#FF826C', green: '#87E7BA', gold: '#FFD18B',
 };
