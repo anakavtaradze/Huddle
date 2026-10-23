@@ -6,6 +6,7 @@
     "dev": "npm --prefix Huddle-RN-Web-Preview run dev",
     "check:web": "npm --prefix Huddle-RN-Web-Preview run build",
     "test": "node --test tests/*.test.mjs",
+    "ai:server": "node server/ai-server.mjs",
     "vega:setup": "node scripts/vega.mjs setup",
     "vega:sync": "node scripts/vega.mjs sync",
     "vega:build": "node scripts/vega.mjs build",
