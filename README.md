@@ -73,3 +73,38 @@ The tests cover navigation history and native source preparation with a fixture.
 Your simulator validation should cover initial focus, every navigation tab, horizontal movie/game rows, scrolling, room entry, Back navigation, nickname editing with the virtual keyboard, and activity voting/removal. Your final competition demo should show Huddle inside the Vega Virtual Device and include the generated `.vpkg` if the competition requires a build artifact. The competition's own rules determine submission eligibility.
 
 Amazon documents the [project build workflow](https://developer.amazon.com/docs/vega/latest/build-an-app), [virtual device workflow](https://developer.amazon.com/docs/vega/0.24/run-apps), [focus guides](https://developer.amazon.com/docs/vega-api/0.24/tvfocusguideview), and [BackHandler API](https://developer.amazon.com/docs/react-native-vega/0.83/backhandler).
+
+## Live Bedrock recommendations
+
+The AI button calls the local server through `/ai` in the web preview. The server uses Amazon Bedrock Converse with `us.amazon.nova-2-lite-v1:0` in `us-east-1` by default. The model selects and explains choices from five real films whose runtimes and genres come from Disney's official movie listings; this bounded candidate pool prevents invented titles and runtimes. The model does not search the entire film market. The app keeps credentials on the server and filters duplicate titles, movies already proposed, disliked genres and runtimes that exceed the shortest attendee budget. The UI makes a model request only when someone presses the AI button; preference edits clear stale ideas without starting another paid call.
+
+You need an active AWS account with credits or billing enabled and permission to invoke the selected Bedrock model. Hackathon registration alone does not configure AWS access or apply a credit to an account. You can authenticate the installed AWS CLI through your console session:
+
+```sh
+aws login --profile huddle --region us-east-1
+aws sts get-caller-identity --profile huddle
+```
+
+The current AWS SDK supports that login profile and refreshes its temporary credentials. You can copy `.env.example` to `.env` and keep the `AWS_PROFILE=huddle` setting. The repository ignores `.env` and other local environment files. A regional Bedrock API key in `AWS_BEARER_TOKEN_BEDROCK` provides an alternative; the server reads that key from `.env` and never includes it in the client bundle. The server supports `AWS_REGION`, `BEDROCK_MODEL_ID`, and `PORT` overrides.
+
+You can start the endpoint and the web preview in separate terminals:
+
+```sh
+npm install
+npm run ai:server
+npm run dev
+```
+
+The server binds only to `127.0.0.1`. Its health route reports the model configuration without making a model call. The `npm run ai:check` command makes one actual model request through the endpoint and checks the returned suggestions against the group constraints. The server permits one request at a time, limits the process to ten model requests per minute, caps output at 800 tokens per request, and avoids automatic AWS retries. These controls limit usage; they do not enforce an account spending budget.
+
+The native demo uses the same server through a VDA reverse connection. After the Vega simulator starts, you can run these commands:
+
+```sh
+npm run ai:vega
+npm run vega:build
+npm run vega:run
+```
+
+The reverse connection maps the simulator's `127.0.0.1:8787` to the Mac's local endpoint. You need to recreate the mapping after the device disconnects or restarts. The server must stay running on the Mac during the demo. A physical device uses the same approach through its VDA connection; this local setup does not provide a public hosted endpoint. The web build accepts a public endpoint override through `VITE_AI_ENDPOINT`; a hosted service requires its own authentication and usage controls before deployment.
+
+AWS documents [console-based CLI login](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sign-in.html), [Bedrock API keys](https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys-generate.html), and [Nova 2 Lite](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html).

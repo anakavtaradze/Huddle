@@ -1,4 +1,5 @@
-import {AI_ENDPOINT, remoteSuggester, type AiSuggester} from './ai';
+import {remoteSuggester, type AiSuggester} from './ai';
+import {AI_ENDPOINT} from './platform/aiEndpoint';
 import {fit, reasons} from './recommend';
 
 // Not a model: a small fixed shelf of fictional titles, ranked with the same common-ground fit.
@@ -23,5 +24,5 @@ export const mockSuggester: AiSuggester = async ({friends, catalog}) => {
     .map(s => ({title: s.title, genre: s.genre, length: s.length, why: reasons(here, s.tags).join(' · ')}));
 };
 
-export const aiIsMock = !AI_ENDPOINT;
-export const aiSuggester: AiSuggester = AI_ENDPOINT ? remoteSuggester(AI_ENDPOINT) : mockSuggester;
+export const aiIsMock = false;
+export const aiSuggester: AiSuggester = remoteSuggester(AI_ENDPOINT);

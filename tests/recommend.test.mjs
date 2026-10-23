@@ -49,7 +49,7 @@ test('The AI prompt names the people, the library and the reply format.', () => 
   assert.doesNotMatch(prompt, /Jordan/); // offline
   assert.match(prompt, /JSON array/);
   assert.match(prompt, /120 minutes or less/); // shortest budget among those here
-  assert.match(prompt, /genres from this list where possible: Comedy, Mystery/);
+  assert.match(prompt, /genre names from this list where possible: Comedy, Mystery/);
 });
 
 test('AI replies are parsed even inside prose or code fences, and bad ones give nothing.', () => {
