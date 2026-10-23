@@ -6,3 +6,10 @@ generated/
 logs/
 coverage/
 .DS_Store
+.env
+.env.*
+!.env.food.example
+
+.data/
+playwright-report/
+test-results/

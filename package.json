@@ -10,7 +10,19 @@
     "vega:setup": "node scripts/vega.mjs setup",
     "vega:sync": "node scripts/vega.mjs sync",
     "vega:build": "node scripts/vega.mjs build",
-    "vega:run": "node scripts/vega.mjs run"
+    "vega:run": "node scripts/vega.mjs run",
+    "food:server": "node --env-file-if-exists=.env server/food-server.mjs",
+    "test:e2e": "playwright test"
   },
-  "engines": {"node": ">=22.18.0"}
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "jsqr": "^1.4.0",
+    "pngjs": "^7.0.0"
+  }
 }
