@@ -2,7 +2,7 @@
 
 Huddle shares its React Native screens between a browser preview and a Vega OS integration. The competition demo targets Amazon's Vega Virtual Device on an Apple Silicon Mac. The browser preview provides a quick UI development loop; the native build produces the Vega package that the virtual device runs.
 
-The repository contains the shared screens, Vega focus/back adapters, and generated native project in `Huddle-Vega`. Vega SDK 0.24.12112 successfully built the aarch64 release package, and the Vega Virtual Device installed and launched the app on this Mac. The current app uses mock movies, games, friends, plans, and room data. The app does not implement streaming, multiplayer synchronization, authentication, or persistent storage.
+The repository contains the shared screens, Vega focus/back adapters, and generated native project in `Huddle-Vega`. Vega SDK 0.24.12112 successfully built the aarch64 release package, and the Vega Virtual Device installed and launched the app on this Mac. The current app uses mock movies, games, friends, plans, and room data. The app persists recommendation feedback on the current device. The app does not implement streaming, multiplayer synchronization, or authentication.
 
 ## Browser development
 
@@ -58,6 +58,30 @@ You can stop the virtual device with this command:
 ```sh
 vega virtual-device stop
 ```
+
+## Recommendation feedback harness
+
+Huddle implements a small recursive self-improvement (RSI) loop for catalog movie rankings. Each profile can rate movies through the Movies screen or the room's main recommendation. The app stores one explicit like/dislike rating per profile and movie; a correction replaces that rating. The app saves ratings, learned weights, and evaluation results under each stable profile ID and restores them across reloads and restarts. The browser preview uses localStorage for its origin, and Vega uses the SDK's AsyncStorage API. The reset control clears only the current profile's saved learning. The app keeps this data on the current device; it does not synchronize profiles across devices. Clearing browser data or uninstalling the native app can remove these records.
+
+The storage layer validates versioned records before restoration, waits for restoration before accepting ratings, and serializes saves per profile. A failed read preserves the saved record and blocks ratings for that profile until a retry succeeds or the user resets that profile. A failed save keeps the latest feedback in memory and presents a retry control.
+
+The harness starts learning after a profile rates six distinct movies. It reserves every third movie rating for validation and trains bounded genre weights on the remaining ratings. Each run starts from the previous accepted weights, proposes up to five successive updates, and promotes an update only when it reduces mean squared prediction error on validation ratings. The harness stops the run when a candidate fails that check. A correction preserves the movie's original partition, and the neutral model replaces a champion when that champion performs worse than the neutral baseline.
+
+The recommender preserves time filtering and the least-satisfied person's explicit taste score as its first ranking criterion. Learned feedback adjusts the average score by at most 0.5 points before the vote tiebreaker. The loop affects catalog movie ranking; the AI idea generator and game ranking retain their existing behavior. The small, repeatedly reused validation set measures a preference prediction proxy; it does not establish improved real-world recommendation quality.
+
+You can replay a synthetic example with this command:
+
+```sh
+node scripts/rsi.mjs --demo
+```
+
+You can supply actual feedback through a JSON array with entries such as `{"friendId":"me","movieId":"m8","rating":1}`. Each entry uses a catalog movie ID, a known profile ID, and a rating of `1` or `-1`.
+
+```sh
+node scripts/rsi.mjs feedback.json
+```
+
+The command prints evaluation scores, promotion counts, learned weights, and the resulting group recommendation. The replay command leaves the running app's saved learning unchanged.
 
 ## Validation
 

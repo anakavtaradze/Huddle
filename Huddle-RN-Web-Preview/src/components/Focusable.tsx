@@ -3,10 +3,10 @@ import {Pressable, StyleSheet, Text, View, type ViewStyle} from 'react-native';
 import {C} from '../theme/colors';
 import {CoverArt} from './Poster';
 
-export function Action({label,onPress,secondary=false,style}:{label:string;onPress:()=>void;secondary?:boolean;style?:ViewStyle}) {
+export function Action({label,onPress,secondary=false,style,disabled=false}:{label:string;onPress:()=>void;secondary?:boolean;style?:ViewStyle;disabled?:boolean}) {
   const [focused,setFocused] = useState(false);
   const [hovered,setHovered] = useState(false);
-  return <Pressable focusable accessibilityRole="button" onPress={onPress} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} onHoverIn={()=>setHovered(true)} onHoverOut={()=>setHovered(false)} style={({pressed})=>[styles.action,secondary&&styles.secondary,hovered&&styles.hovered,focused&&styles.focused,pressed&&{opacity:0.8},style]}>
+  return <Pressable focusable={!disabled} disabled={disabled} accessibilityState={{disabled}} accessibilityRole="button" onPress={onPress} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)} onHoverIn={()=>setHovered(true)} onHoverOut={()=>setHovered(false)} style={({pressed})=>[styles.action,secondary&&styles.secondary,hovered&&styles.hovered,focused&&styles.focused,pressed&&{opacity:0.8},disabled&&{opacity:0.5},style]}>
     <Text style={[styles.actionText,secondary&&{color:C.text}]}>{label}</Text>
   </Pressable>;
 }
