@@ -79,3 +79,18 @@ test('People who share a taste share one line.', () => {
   assert.deepEqual(reasons(here, ['Music']), ['Mia likes Music', 'Sam dislikes Music']);
   assert.deepEqual(reasons(here, ['Documentary']), ['No strong feelings either way']);
 });
+
+test('The recommender returns no pick when every movie exceeds the time budget.', () => {
+  const short = initialFriends.map(f => ({...f, minutes: 60}));
+  assert.equal(pick(short), null);
+});
+
+test('The explanation preserves genre dislikes even when likes outweigh them.', () => {
+  const mia = {...initialFriends[0], likes: ['Animation', 'Family'], dislikes: ['Fantasy']};
+  const movie = movies.find(m => m.id === 'm4');
+  const p = recommend([mia], [movie], games, []);
+  assert.ok(p.scores[mia.id] > 0);
+  assert.ok(p.why.includes('Mia dislikes Fantasy'));
+  assert.ok(!p.notes.includes('Nobody dislikes it'));
+  assert.ok(p.notes.some(n => n.includes('Mia dislikes some genres')));
+});

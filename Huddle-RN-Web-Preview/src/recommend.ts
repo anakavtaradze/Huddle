@@ -56,7 +56,8 @@ export function recommend(friends: Friend[], movies: Movie[], games: Game[], act
   if (!here.length || !movies.length) return null;
   const budget = min(here.map(f => f.minutes));
   const fits = movies.filter(m => movieMinutes(m.length) <= budget);
-  const pool = fits.length ? fits : movies;
+  if (!fits.length) return null;
+  const pool = fits;
   const votes = (title: string) => activities.filter(a => a.title === title).reduce((n, a) => n + a.voters.length, 0);
 
   const ranked = pool
@@ -78,9 +79,9 @@ export function recommend(friends: Friend[], movies: Movie[], games: Game[], act
     .filter(g => best.movie.gameIds.includes(g.id))
     .sort((a, b) => gameScore(b) - gameScore(a));
 
-  const notes = [fits.length ? `Runs ${best.movie.length}, which suits everyone` : 'Nothing fits the shortest time budget, so length was ignored'];
-  const low = best.scores[best.pickiest.id];
-  notes.push(low >= 0 ? 'Nobody dislikes it' : `${best.pickiest.name} is not a fan, but it is the best common ground`);
+  const notes = [`Runs ${best.movie.length}, which suits everyone`];
+  const objectors = here.filter(f => disliked(f, genres(best.movie.genre)).length > 0);
+  notes.push(objectors.length === 0 ? 'Nobody dislikes it' : `${names(objectors)} ${objectors.length === 1 && objectors[0].id !== 'me' ? 'dislikes' : 'dislike'} some genres, but this is the best common ground`);
   const skipped = movies.filter(m => !pool.includes(m));
   if (skipped.length) {
     const short = here.find(f => f.minutes === budget);
