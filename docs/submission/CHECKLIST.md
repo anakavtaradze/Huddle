@@ -26,15 +26,22 @@ The Open Source mini challenge requires an additional qualifying project or cont
 
 ## Verification record
 
-The team should replace each pending status with the actual result from the final merged commit.
+The local submission branch includes Bedrock PR head `ce7e1ca83530b3b29e0b80792ada47fdcdc4d52f` and the submission packaging changes. The checks below ran on that combined source on October 23, 2026. The team should confirm the final merge commit and complete the device and live-service checks during recording.
 
 | Check | Status |
 | --- | --- |
-| `npm ci` and browser dependency installation | Pending final-commit verification |
-| `npm test` | Pending final-commit verification |
-| `npm run check:web` | Pending final-commit verification |
-| `npm run test:e2e` | Pending final-commit verification |
-| `npm run vega:build` | Pending final-commit verification |
-| Final Vega remote walkthrough | Pending final-commit verification |
-| Live `npm run ai:check` | Pending final-commit verification |
-| TV-to-phone food invitation and status update | Pending final-commit verification |
+| `npm ci` and browser dependency installation | The locked dependency installations passed. |
+| `npm test` | All 47 unit and service tests passed. |
+| `npm run check:web` | The TypeScript check and production web build passed. |
+| `npm run test:e2e` | All four browser tests passed, including the AI/learning/food integration check and independent food-party sessions. |
+| AI startup through `npm run ai:server` | A health-only check confirmed that the command loads the port, region, and model ID from `.env`. |
+| Root MIT license | The file matched GitHub's canonical MIT text after copyright substitution. |
+| Documentation links | All local Markdown targets resolved. |
+| `npm run vega:build` | The team must verify the final device build; this packaging run did not rebuild the native app. |
+| Final Vega remote walkthrough | The team must verify the final app during recording. |
+| Live `npm run ai:check` | The team must verify a live Bedrock response before recording; the packaging checks invoked no paid model calls. |
+| TV-to-phone food invitation and status update | Browser automation passed; the team must verify its physical phone's network connection during recording. |
+
+## Existing dependency advisory
+
+The fresh browser dependency installation reported one high-severity advisory for `image-size@1.2.1` through React Native's development dependency tree. The advisory concerns denial of service during image metadata parsing ([JXL/HEIF](https://github.com/advisories/GHSA-5p2g-fcmc-qvqq), [ICNS](https://github.com/advisories/GHSA-w3rx-r6r6-pgpr)). This submission package retains the existing dependency versions. The root service dependency audit reported no vulnerabilities during installation.
